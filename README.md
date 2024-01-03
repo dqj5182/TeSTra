@@ -132,18 +132,12 @@ CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TE
 
 For existing checkpoints, please refer to the next [section](#main-results-and-checkpoints).
 
-### Batch mode
-
-Run the online inference in `batch mode` for performance benchmarking.
-
-    ```
-    cd TeSTra/
-    # Online inference in batch mode
-    python tools/test_net.py --config_file $PATH_TO_CONFIG_FILE --gpu $CUDA_VISIBLE_DEVICES \
-        MODEL.CHECKPOINT $PATH_TO_CHECKPOINT MODEL.LSTR.INFERENCE_MODE batch
-    ```
-
 ### Stream mode
+
+```shell
+CUDA_VISIBLE_DEVICES=4 python tools/test_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_th14_long_512_work_8_decay_0.97.epoch-18.pth MODEL.LSTR.INFERENCE_MODE stream
+```
+
 
 Run the online inference in `stream mode` to calculate runtime in the streaming setting. 
 

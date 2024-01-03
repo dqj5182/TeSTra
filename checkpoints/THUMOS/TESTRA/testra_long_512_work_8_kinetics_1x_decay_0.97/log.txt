@@ -2075,3 +2075,11 @@ Epoch 23 | train det_loss: 0.15392 | test det_loss: 0.54473 det_mAP: 0.70819 | r
             'START_EPOCH': 1,
             'WEIGHT_DECAY': 5e-05},
  'VERBOSE': False}
+Epoch  1 | train det_loss: 0.94572 | test det_loss: 0.67852 det_mAP: 0.54680 | running time: 51.03 sec
+Epoch  2 | train det_loss: 0.48694 | test det_loss: 0.61053 det_mAP: 0.62100 | running time: 50.75 sec
+Epoch  3 | train det_loss: 0.40867 | test det_loss: 0.58119 det_mAP: 0.64645 | running time: 50.17 sec
+Epoch  4 | train det_loss: 0.36705 | test det_loss: 0.54978 det_mAP: 0.66368 | running time: 50.17 sec
+Epoch  5 | train det_loss: 0.33999 | test det_loss: 0.51908 det_mAP: 0.67839 | running time: 49.56 sec
+Epoch  6 | train det_loss: 0.32718 | test det_loss: 0.52377 det_mAP: 0.66609 | running time: 49.56 sec
+Epoch  7 | train det_loss: 0.30734 | test det_loss: 0.54743 det_mAP: 0.68342 | running time: 48.73 sec
+Epoch  8 | train det_loss: 0.29754 | test det_loss: 0.59329 det_mAP: 0.68780 | running time: 49.05 sec

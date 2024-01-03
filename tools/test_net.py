@@ -1,6 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import sys
+sys.path.append('/home/danieljung0121/TeSTra/src')
 from rekognition_online_action_detection.utils.parser import load_cfg
 from rekognition_online_action_detection.utils.env import setup_environment
 from rekognition_online_action_detection.utils.checkpointer import setup_checkpointer
