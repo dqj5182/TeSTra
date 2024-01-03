@@ -22,11 +22,10 @@ def do_lstr_batch_inference(cfg,
                             model,
                             device,
                             logger):
-    if cfg.MODEL.LSTR.INFERENCE_MODE == 'stream':
-        do_lstr_stream_inference(cfg,
-                                 model,
-                                 device,
-                                 logger)
+    do_lstr_stream_inference(cfg,
+                                model,
+                                device,
+                                logger)
 
 
 def do_lstr_stream_inference(cfg, model, device, logger):
@@ -52,10 +51,7 @@ def do_lstr_stream_inference(cfg, model, device, logger):
         for session_idx, session in enumerate(cfg.DATA.TEST_SESSION_SET): # cfg.DATA.TEST_SESSION_SET is list of videos
             model.clear_cache()
 
-            if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:
-                pred_scores = [[] for _ in range(cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES)]
-            else:
-                pred_scores = []
+            pred_scores = []
             gt_targets = []
 
             visual_inputs = np.load(osp.join(cfg.DATA.DATA_ROOT, cfg.INPUT.VISUAL_FEATURE, session + '.npy'), mmap_mode='r')
@@ -78,37 +74,19 @@ def do_lstr_stream_inference(cfg, model, device, logger):
                 work_object_inputs = to_device(object_inputs[work_indices])
 
                 # Get long memory
-                PRECISE = True
-                if PRECISE:
-                    long_end = work_start - long_memory_sample_rate
-                    if long_end < 0:
-                        long_indices = [0 for _ in range(long_memory_num_samples)]
-                        long_indices_set = [long_indices for _ in range(long_memory_sample_rate)]
-                        long_visual_inputs = to_device(visual_inputs[long_indices])
-                        long_motion_inputs = to_device(motion_inputs[long_indices])
-                        long_object_inputs = to_device(object_inputs[long_indices])
-                    else:
-                        long_indices = long_indices_set[long_end % long_memory_sample_rate][1:] + [long_end]
-                        long_indices_set[long_end % long_memory_sample_rate] = long_indices
-                        long_visual_inputs = to_device(visual_inputs[[long_end]])
-                        long_motion_inputs = to_device(motion_inputs[[long_end]])
-                        long_object_inputs = to_device(object_inputs[[long_end]])
+                long_end = work_start - long_memory_sample_rate
+                if long_end < 0:
+                    long_indices = [0 for _ in range(long_memory_num_samples)]
+                    long_indices_set = [long_indices for _ in range(long_memory_sample_rate)]
+                    long_visual_inputs = to_device(visual_inputs[long_indices])
+                    long_motion_inputs = to_device(motion_inputs[long_indices])
+                    long_object_inputs = to_device(object_inputs[long_indices])
                 else:
-                    long_end = work_start - 1
-                    if long_end == -1:
-                        long_indices = [0 for _ in range(long_memory_num_samples)]
-                        long_visual_inputs = to_device(visual_inputs[long_indices])
-                        long_motion_inputs = to_device(motion_inputs[long_indices])
-                        long_object_inputs = to_device(object_inputs[long_indices])
-                    elif long_end % long_memory_sample_rate == 0:
-                        long_indices = long_indices[1:] + [long_end]
-                        long_visual_inputs = to_device(visual_inputs[[long_end]])
-                        long_motion_inputs = to_device(motion_inputs[[long_end]])
-                        long_object_inputs = to_device(object_inputs[[long_end]])
-                    else:
-                        long_visual_inputs = None
-                        long_motion_inputs = None
-                        long_object_inputs = None
+                    long_indices = long_indices_set[long_end % long_memory_sample_rate][1:] + [long_end]
+                    long_indices_set[long_end % long_memory_sample_rate] = long_indices
+                    long_visual_inputs = to_device(visual_inputs[[long_end]])
+                    long_motion_inputs = to_device(motion_inputs[[long_end]])
+                    long_object_inputs = to_device(object_inputs[[long_end]])
 
                 # Get memory key padding mask
                 memory_key_padding_mask = np.zeros(len(long_indices))
@@ -125,66 +103,32 @@ def do_lstr_stream_inference(cfg, model, device, logger):
                     work_motion_inputs,
                     work_object_inputs,
                     memory_key_padding_mask,
-                    cache_num=long_memory_sample_rate if PRECISE else 1,
-                    cache_id=long_end % long_memory_sample_rate if PRECISE else 0)[0]
+                    cache_num=long_memory_sample_rate,
+                    cache_id=long_end % long_memory_sample_rate)[0]
 
-                if cfg.DATA.DATA_NAME.startswith('EK'):
-                    score = score.cpu().numpy()
-                else:
-                    score = score.softmax(dim=-1).cpu().numpy()
+                score = score.softmax(dim=-1).cpu().numpy()
+                import pdb; pdb.set_trace()
 
-                if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:
-                    if work_start == 0:
-                        upsample_score = score[:-cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES].repeat(work_memory_sample_rate, axis=0)
-                        upsample_score = upsample_score[work_start:work_end-1]
-                        anticipate_score = score[-cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES:]
-                        # coarse but sufficient
-                        for t_a in range(0, cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES):
-                            combined_score = np.concatenate((upsample_score, anticipate_score[:t_a + 1]),
-                                                            axis=0)
-                            pred_scores[t_a].extend(list(combined_score))
-                        gt_targets.extend(list(target[:work_end-1]))
-                    else:
-                        for t_a in range(0, cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES):
-                            pred_scores[t_a].append(list(score[t_a - cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES]))
-                        gt_targets.append(list(target[work_end - 1]))
+                if work_start == 0:
+                    gt_targets.extend(list(target[:work_end]))
+                    pred_scores.extend(list(score))
                 else:
-                    if work_start == 0:
-                        gt_targets.extend(list(target[:work_end]))
-                        pred_scores.extend(list(score))
-                    else:
-                        gt_targets.append(list(target[work_end - 1]))
-                        pred_scores.append(list(score[-1]))
+                    gt_targets.append(list(target[work_end - 1]))
+                    pred_scores.append(list(score[-1]))
 
             end_time = time.time()
             logger.info('Running time: {:.3f} seconds'.format(end_time - start_time))
 
-            if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:
-                for t_a in range(0, cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES):
-                    result = compute_result['perframe'](
-                        cfg,
-                        gt_targets,
-                        pred_scores[t_a][:-1 - t_a],
-                    )
-                    sec = (t_a + 1) / cfg.DATA.FPS * cfg.MODEL.LSTR.ANTICIPATION_SAMPLE_RATE
-                    logger.info('mAP of video ({:.2f}s) {}: {:.5f}'.format(sec, session, result['mean_AP']))
-            else:
-                result = compute_result['perframe'](
-                    cfg,
-                    gt_targets,
-                    pred_scores,
-                )
-                logger.info('mAP of video {}: {:.5f}'.format(session, result['mean_AP']))
+            result = compute_result['perframe'](
+                cfg,
+                gt_targets,
+                pred_scores,
+            )
+            logger.info('mAP of video {}: {:.5f}'.format(session, result['mean_AP']))
 
 
             gt_targets_all[session] = np.array(gt_targets)
-            if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:
-                for t_a in range(0, cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES):
-                    pred_scores[t_a] = np.array(pred_scores[t_a][:- 1 - t_a])
-                pred_scores_all[session] = np.stack(pred_scores, axis=0).transpose(1, 2, 0)
-                pred_scores_all[session] = pred_scores_all[session]
-            else:
-                pred_scores_all[session] = np.array(pred_scores)
+            pred_scores_all[session] = np.array(pred_scores)
 
 
     # pkl.dump({
@@ -193,31 +137,14 @@ def do_lstr_stream_inference(cfg, model, device, logger):
     #     'perframe_gt_targets': gt_targets_all,
     # }, open(osp.splitext(cfg.MODEL.CHECKPOINT)[0] + '.stream.pkl', 'wb'))
 
-    if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:
-        maps_list = []
-        for t_a in range(0, cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES):
-            result = compute_result['perframe'](
-                cfg,
-                np.concatenate(list(gt_targets_all.values()), axis=0),
-                np.concatenate(list(pred_scores_all.values()), axis=0)[:, :, t_a],
-            )
-            logger.info('Action anticipation ({:.2f}s) perframe m{}: {:.5f}'.format(
-                (t_a + 1) / cfg.DATA.FPS * cfg.MODEL.LSTR.ANTICIPATION_SAMPLE_RATE,
-                cfg.DATA.METRICS, result['mean_AP']
-            ))
-            maps_list.append(result['mean_AP'])
-        logger.info('Action anticipation (mean) perframe m{}: {:.5f}'.format(
-            cfg.DATA.METRICS, np.mean(maps_list)
-        ))
-    else:
-        result = compute_result['perframe'](
-            cfg,
-            np.concatenate(list(gt_targets_all.values()), axis=0),
-            np.concatenate(list(pred_scores_all.values()), axis=0),
-        )
-        logger.info('Action detection perframe m{}: {:.5f}'.format(
-            cfg.DATA.METRICS, result['mean_AP']
-        ))
+    result = compute_result['perframe'](
+        cfg,
+        np.concatenate(list(gt_targets_all.values()), axis=0),
+        np.concatenate(list(pred_scores_all.values()), axis=0),
+    )
+    logger.info('Action detection perframe m{}: {:.5f}'.format(
+        cfg.DATA.METRICS, result['mean_AP']
+    ))
 
     gt_targets = gt_targets_all
     pred_scores = pred_scores_all
