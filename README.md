@@ -138,12 +138,10 @@ From scratch
 CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4
 ```
 
-```
-cd TeSTra/
-python tools/train_net.py --config_file $PATH_TO_CONFIG_FILE --gpu $CUDA_VISIBLE_DEVICES
-# Finetuning from a pretrained model
-python tools/train_net.py --config_file $PATH_TO_CONFIG_FILE --gpu $CUDA_VISIBLE_DEVICES \
-    MODEL.CHECKPOINT $PATH_TO_CHECKPOINT
+Finetune from a pre-trained model
+
+```shell
+CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_th14_long_512_work_8_decay_0.97.epoch-18.pth
 ```
 
 ## Online Inference
