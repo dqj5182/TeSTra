@@ -68,7 +68,7 @@ _C.MODEL.LSTR.ENC_MODULE = [
 _C.MODEL.LSTR.DEC_MODULE = [-1, 2, True]
 _C.MODEL.LSTR.FC_NORM = False
 # Inference modes
-_C.MODEL.LSTR.INFERENCE_MODE = 'batch'
+_C.MODEL.LSTR.INFERENCE_MODE = 'stream'
 # Position Embedding
 # _C.MODEL.LSTR.POSITION_EMBEDDING = 'default'
 

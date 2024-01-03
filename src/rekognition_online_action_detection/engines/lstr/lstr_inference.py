@@ -27,11 +27,6 @@ def do_lstr_batch_inference(cfg,
                                  model,
                                  device,
                                  logger)
-    else:
-        do_perframe_det_batch_inference(cfg,
-                                        model,
-                                        device,
-                                        logger)
 
 
 def do_lstr_stream_inference(cfg, model, device, logger):
@@ -45,21 +40,16 @@ def do_lstr_stream_inference(cfg, model, device, logger):
     def to_device(x, dtype=np.float32):
         return torch.as_tensor(x.astype(dtype)).unsqueeze(0).to(device)
 
-    long_memory_length = cfg.MODEL.LSTR.LONG_MEMORY_LENGTH
     long_memory_sample_rate = cfg.MODEL.LSTR.LONG_MEMORY_SAMPLE_RATE
     long_memory_num_samples = cfg.MODEL.LSTR.LONG_MEMORY_NUM_SAMPLES
     work_memory_length = cfg.MODEL.LSTR.WORK_MEMORY_LENGTH
     work_memory_sample_rate = cfg.MODEL.LSTR.WORK_MEMORY_SAMPLE_RATE
-    work_memory_num_samples = cfg.MODEL.LSTR.WORK_MEMORY_NUM_SAMPLES
-
-    # if len(cfg.DATA.TEST_SESSION_SET) != 1:
-    #     raise RuntimeError('Only support testing one video each time for stream inference, will fix later')
 
     pred_scores_all = {}
     gt_targets_all = {}
 
     with torch.no_grad():
-        for session_idx, session in enumerate(cfg.DATA.TEST_SESSION_SET):
+        for session_idx, session in enumerate(cfg.DATA.TEST_SESSION_SET): # cfg.DATA.TEST_SESSION_SET is list of videos
             model.clear_cache()
 
             if cfg.MODEL.LSTR.ANTICIPATION_NUM_SAMPLES > 0:

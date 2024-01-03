@@ -1,7 +1,7 @@
 DATA:
   DATA_NAME: 'THUMOS'
 INPUT:
-  MODALITY: 'twostream'
+  MODALITY: 'visual'
   VISUAL_FEATURE: 'rgb_kinetics_resnet50'
   MOTION_FEATURE: 'flow_kinetics_bninception'
   OBJECT_FEATURE: 'flow_kinetics_bninception'

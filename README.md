@@ -119,13 +119,13 @@ Will post a cross-link here once done.
 The commands for training are as follows.\
 From scratch
 ```shell
-CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4
+CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_lite_long_512_work_8_kinetics_1x_box.yaml --gpu 4
 ```
 
 Finetune from a pre-trained model
 
 ```shell
-CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_th14_long_512_work_8_decay_0.97.epoch-18.pth
+CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_lite_long_512_work_8_kinetics_1x_box.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_lite_th14_long_512_work_8_nv_box.epoch-25.pth
 ```
 
 ## Online Inference
@@ -135,7 +135,7 @@ For existing checkpoints, please refer to the next [section](#main-results-and-c
 ### Stream mode
 
 ```shell
-CUDA_VISIBLE_DEVICES=4 python tools/test_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_th14_long_512_work_8_decay_0.97.epoch-18.pth MODEL.LSTR.INFERENCE_MODE stream
+CUDA_VISIBLE_DEVICES=4 python tools/test_net.py --config_file configs/THUMOS/TESTRA/testra_lite_long_512_work_8_kinetics_1x_box.yaml --gpu 4 MODEL.CHECKPOINT pretrained_weights/testra_lite_th14_long_512_work_8_nv_box.epoch-25.pth MODEL.LSTR.INFERENCE_MODE stream
 ```
 
 
