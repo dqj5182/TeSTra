@@ -15,41 +15,11 @@ pip install -r requirements.txt
 
 ## Data Preparation
 
-### Pre-extracted Feature
+### Feature extractor
+We selected "ResNet-50 pretrained on Kinetics-400" (tsn_r50_320p_1x1x8_100e_kinetics400_rgb checkpoint from [MMAction2](https://github.com/open-mmlab/mmaction2)) for RGB inputs.\
+For optical flow inputs, we selected "NVIDIA Optical Flow SDK" or [DenseFlow](https://github.com/open-mmlab/denseflow) and BN-Inception.
 
 You can directly download the pre-extracted feature (.zip) from the UTBox links below.
-
-#### THUMOS'14
-
-|   Description  |   backbone   |    pretrain    |                            UTBox Link                             |
-|  ------------  |  ----------  |  ------------  |  ---------------------------------------------------------------  |
-|   frame label  |     N/A      |       N/A      | [link](https://utexas.box.com/s/7jr33g7mtoowsrzn99vecebu9co4wywv) |
-|   RGB          |  ResNet-50   |  Kinetics-400  | [link](https://utexas.box.com/s/fbetd0331iod7jx7udfbckn9359mrp6o) |
-|   Flow (TV-L1) | BN-Inception |  Kinetics-400  | [link](https://utexas.box.com/s/kdzeeztwlaphe8zcun5ebavv2pd37fxb) |
-|   Flow (NVOF)  | BN-Inception |  Kinetics-400  | [link](https://utexas.box.com/s/8tneyw7npy7gsgzydlu3610czlzmhs4k) |
-|   RGB          |  ResNet-50   |    ANet v1.3   | [link](https://utexas.box.com/s/avtdkeegkh5kl7ajg4ltqhd3ai33bb8m) |
-|   Flow (TV-L1) |  ResNet-50   |    ANet v1.3   | [link](https://utexas.box.com/s/rhvihb33e54ro07zsmcbgku16cikk2g4) |
-
-#### EK100
-
-|  Description   |   backbone   |   pretrain     |                            UTBox Link                             |
-|  ------------  |  ----------  |  ------------  |  ---------------------------------------------------------------  |
-|  action label  |     N/A      |      N/A       | [link](https://utexas.box.com/s/xi1xowkhlmi079suwwq6dlez44lb846e) |
-|  noun label    |     N/A      |      N/A       | [link](https://utexas.box.com/s/vmg478wjbcf83wc0adw0t9yxduxjqna9) |
-|  verb label    |     N/A      |      N/A       | [link](https://utexas.box.com/s/e9yes31rblmuzb5mdrf3gy1mb7af7a63) |
-|  RGB           | BN-Inception | IN-1k + EK100  | [link](https://utexas.box.com/s/kypifujsplkg0ud7q955amgvoxflqzx5) |
-|  Flow (TV-L1)  | BN-Inception | IN-1k + EK100  | [link](https://utexas.box.com/s/2aga6r29o4zdziog3y89aliauguiqhmn) |
-|  Object        | Faster-RCNN  | MS-COCO + EK55 | [link](https://utexas.box.com/s/rsqdo3sihn7o4iyy6rtyu03mu77bh2ka) |
-* Note: The features are converted from [RULSTM](https://github.com/fpv-iplab/rulstm) to be compatible with the codebase.
-* Note: Object feature is not used in TeSTRa. The feature is uploaded for completeness only.
-
-Once the zipped files are downloaded, you are suggested to unzip them and follow to file organization (see below).
-
-### (Alterative) Static links
-It may be easier to download from static links via `wget` for non-GUI systems.
-To do so, simply change the utbox link from `https://utexas.box.com/s/xxxx` to `https://utexas.box.com/shared/static/xxxx.zip`.
-Unfortunately, UTBox does not support customized url names.
-Therfore, to `wget` while keeping the name readable, please refer to the bash scripts provided in [DATASET.md](./DATASET.md).
 
 
 ### (Alternative) Prepare dataset from scratch
@@ -64,10 +34,6 @@ For TH14, please refer to [LSTR](https://github.com/amazon-research/long-short-t
 
 For EK100, please find more details at [RULSTM](https://github.com/fpv-iplab/rulstm).
 
-#### Computing Optical Flow
-
-I will release a pure-python version of [DenseFlow](https://github.com/open-mmlab/denseflow) in the near future.
-Will post a cross-link here once done. 
 
 
 ### Data Structure
