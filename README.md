@@ -132,7 +132,11 @@ Will post a cross-link here once done.
 
 ## Training
 
-The commands for training are as follows.
+The commands for training are as follows.\
+From scratch
+```shell
+CUDA_VISIBLE_DEVICES=4 python tools/train_net.py --config_file configs/THUMOS/TESTRA/testra_long_512_work_8_kinetics_1x_decay_0.97.yaml --gpu 4
+```
 
 ```
 cd TeSTra/
