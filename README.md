@@ -7,27 +7,11 @@ This is a PyTorch implementation for our ECCV 2022 paper "[`Real-time Online Vid
 ![teaser](assets/testra_teaser.png?raw=true)
 
 ## Environment
-
-- The code is developed with CUDA 10.2, ***Python >= 3.7.7***, ***PyTorch >= 1.7.1***
-
-    1. Clone the repo ***recursively***.
-        ```
-        git clone --recursive git@github.com:zhaoyue-zephyrus/TeSTra.git
-        ```
-
-    2. [Optional but recommended] create a new conda environment.
-        ```
-        conda create -n testra python=3.7.7
-        ```
-        And activate the environment.
-        ```
-        conda activate testra
-        ```
-
-    3. Install the requirements
-        ```
-        pip install -r requirements.txt
-        ```
+```shell
+conda create -n testra python=3.7.7
+conda activate testra
+pip install -r requirements.txt
+```
 
 ## Data Preparation
 
