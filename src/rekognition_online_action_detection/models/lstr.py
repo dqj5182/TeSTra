@@ -50,6 +50,7 @@ class LSTR(nn.Module):
         self.work_memory_use_pe = cfg.MODEL.LSTR.WORK_MEMORY_USE_PE
         self.include_work = cfg.MODEL.LSTR.LONG_MEMORY_INCLUDE_WORK
         self.include_work2 = cfg.MODEL.LSTR.LONG_MEMORY_INCLUDE_WORK2
+
         if self.include_work and self.include_work2:
             raise ValueError('cfg.MODEL.LSTR.LONG_MEMORY_INCLUDE_WORK and'
                              'cfg.MODEL.LSTR.LONG_MEMORY_INCLUDE_WORK2 should'
